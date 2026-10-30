@@ -1,65 +1,258 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="버튼 하나로 만나는 오늘의 작은 행운. 재미로 보는 오늘의 운세입니다.">
-<title>서연주의 오늘의 운세</title>
-<style>
-*{box-sizing:border-box}body{margin:0;background:#f8f5ee;color:#293d32;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;line-height:1.7}main{width:min(620px,calc(100% - 40px));margin:0 auto;padding:48px 0}header{display:flex;justify-content:space-between;align-items:center;font-size:13px;border-bottom:1px solid #293d3226;padding-bottom:20px}header strong{font-size:16px}.intro{text-align:center;padding:44px 0 26px}.eyebrow{font-size:11px;letter-spacing:3px;color:#6b785f}.orb{width:112px;height:112px;border-radius:50%;background:#e3e8d6;display:grid;place-items:center;font-size:48px;margin:22px auto}h1{font-size:clamp(32px,7vw,46px);letter-spacing:-2px;line-height:1.3;margin:18px 0}p{color:#697264;word-break:keep-all}.intro p{font-size:15px}button{display:block;width:100%;border:0;border-radius:16px;background:#293d32;color:#fff;padding:19px;font:inherit;font-weight:700;cursor:pointer;transition:background .2s,transform .2s}button:hover{background:#425640;transform:translateY(-2px)}button:focus-visible{outline:3px solid #b38b41;outline-offset:5px}.note{text-align:center;font-size:12px;color:#76796e}.result{margin-top:28px;border:1px solid #d7decb;background:#fffdf7;border-radius:22px;padding:28px}.result[hidden]{display:none}.label{font-size:11px;letter-spacing:2px;color:#718060}h2{margin:8px 0 12px;font-size:24px;letter-spacing:-1px}.result p{margin:0}.lucky{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px}.lucky div{background:#edf0e4;border-radius:12px;padding:16px}.lucky span{display:block;font-size:12px;color:#6d7864}.lucky strong{font-size:19px}.tip{margin-top:22px;padding-top:18px;border-top:1px solid #e0e4d6;font-size:14px}footer{text-align:center;font-size:12px;color:#76796e;margin-top:44px}@media(max-width:400px){.result{padding:22px}.lucky{gap:8px}}@media(prefers-reduced-motion:reduce){button{transition:none}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="세상의 모든 귀여운 강아지와 고양이를 만나보세요!">
+    <title>오늘의 귀여움 🐾</title>
+    <style>
+        :root {
+            --bg-color: #f0f4f8;
+            --card-bg: #ffffff;
+            --text-main: #2d3436;
+            --text-sub: #636e72;
+            --accent-dog: #ff7675;
+            --accent-cat: #74b9ff;
+            --accent-random: #55efc4;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 20px;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+
+        header p {
+            color: var(--text-sub);
+            font-size: 0.95rem;
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .image-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background-color: #f7f9fc;
+            border-radius: 16px;
+            overflow: hidden;
+            display: grid;
+            place-items: center;
+        }
+
+        #pet-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        #pet-image.loaded {
+            opacity: 1;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #f7f9fc;
+            color: var(--text-sub);
+            font-size: 0.9rem;
+            z-index: 1;
+        }
+
+        .loading-overlay.hidden {
+            display: none;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--accent-random);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 12px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn-random {
+            grid-column: span 2;
+        }
+
+        button {
+            border: none;
+            border-radius: 14px;
+            padding: 16px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: white;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .btn-dog { background-color: var(--accent-dog); }
+        .btn-dog:hover { background-color: #ff5e5d; }
+
+        .btn-cat { background-color: var(--accent-cat); }
+        .btn-cat:hover { background-color: #5ba7f8; }
+
+        .btn-random { background-color: var(--text-main); }
+        .btn-random:hover { background-color: #1a1e21; }
+
+        footer {
+            margin-top: auto;
+            padding: 30px 0;
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            text-align: center;
+        }
+
+        @media (max-width: 480px) {
+            header h1 { font-size: 1.6rem; }
+            .main-container { padding: 16px; }
+        }
+    </style>
 </head>
 <body>
-<main>
-<header><strong>서연주의 작은 행운 ✳</strong><time id="today"></time></header>
-<section class="intro" aria-labelledby="title">
-<span class="eyebrow">A LITTLE LUCK FOR TODAY</span>
-<div class="orb" aria-hidden="true">🍀</div>
-<h1 id="title">오늘, 어떤 행운이<br>기다리고 있을까요?</h1>
-<p>잠깐의 설렘이 필요한 순간,<br>당신을 위한 오늘의 메시지를 열어보세요.</p>
-</section>
-<button id="fortune-button" type="button" aria-controls="result" aria-expanded="false">오늘의 운세 확인하기 ✨</button>
-<p class="note">재미로 보는 운세입니다. 같은 날에는 같은 메시지를 보여드려요.</p>
-<section id="result" class="result" aria-live="polite" aria-atomic="true" hidden>
-<span class="label">YOUR DAILY FORTUNE</span>
-<h2 id="fortune-title"></h2>
-<p id="fortune-message"></p>
-<div class="lucky"><div><span>행운의 색</span><strong id="lucky-color"></strong></div><div><span>행운의 숫자</span><strong id="lucky-number"></strong></div></div>
-<div class="tip"><strong>오늘의 작은 실천</strong><p id="fortune-tip"></p></div>
-</section>
-<noscript><p class="note">운세를 확인하려면 브라우저에서 자바스크립트를 켜 주세요.</p></noscript>
-<footer>당신의 하루에 작은 좋은 일이 함께하길.</footer>
-</main>
-<script>
-const fortunes = [
- {title:'작은 시작이 빛나는 날',message:'미뤄두었던 일을 가볍게 시작해 보세요. 완벽한 준비보다 첫걸음이 기분 좋은 변화를 만들어줄지도 몰라요.',tip:'하고 싶었던 일에 딱 10분만 써보세요.'},
- {title:'다정한 말이 행운이 되는 날',message:'평소 고마웠던 사람에게 마음을 전해보세요. 당신이 건넨 따뜻한 한마디가 하루의 분위기를 바꿀 수 있어요.',tip:'생각나는 사람에게 짧은 안부를 보내보세요.'},
- {title:'나만의 속도로 가도 좋은 날',message:'조금 천천히 움직여도 괜찮아요. 주변의 속도보다 내 마음에 집중하면 다음 걸음이 더 편안해질 거예요.',tip:'잠깐 화면을 내려놓고 깊게 숨을 쉬어보세요.'},
- {title:'새로운 시선이 찾아오는 날',message:'익숙한 일상에 작은 변화를 더해보세요. 새로운 길이나 처음 듣는 음악에서 뜻밖의 영감을 만날 수 있어요.',tip:'평소와 다른 길로 짧게 산책해 보세요.'},
- {title:'차곡차곡 쌓아온 힘을 믿는 날',message:'그동안의 작은 노력을 돌아보세요. 눈에 띄지 않았던 성장 속에서 오늘을 시작할 자신감을 찾을 수 있어요.',tip:'최근에 잘 해낸 일 세 가지를 적어보세요.'},
- {title:'일상 속 즐거움을 발견하는 날',message:'멀리서 특별한 일을 찾지 않아도 좋아요. 좋아하는 노래, 따뜻한 차처럼 가까운 즐거움이 하루를 채워줄 거예요.',tip:'좋아하는 음악 한 곡을 끝까지 들어보세요.'},
- {title:'머릿속이 한결 가벼워지는 날',message:'복잡한 생각을 하나씩 밖으로 꺼내보세요. 작은 정리가 마음에 여유를 만들고 새로운 생각을 불러올 수 있어요.',tip:'책상 한쪽을 정리하거나 할 일을 짧게 적어보세요.'}
-];
-const colors = ['세이지 그린','하늘색','크림색','라벤더','살구색','네이비','노란색'];
-function getDayInfo(date) {
- const year = date.getFullYear(), month = date.getMonth(), day = date.getDate();
- return {key: Date.UTC(year, month, day) / 86400000, text: new Intl.DateTimeFormat('ko-KR',{year:'numeric',month:'long',day:'numeric'}).format(date), iso: `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`};
-}
-function updateDate(info) {const time=document.getElementById('today');time.textContent=info.text;time.dateTime=info.iso;}
-updateDate(getDayInfo(new Date()));
-document.getElementById('fortune-button').addEventListener('click', function () {
- const info=getDayInfo(new Date());
- updateDate(info);
- const fortune=fortunes[((info.key*13+5)%fortunes.length+fortunes.length)%fortunes.length];
- document.getElementById('fortune-title').textContent=fortune.title;
- document.getElementById('fortune-message').textContent=fortune.message;
- document.getElementById('fortune-tip').textContent=fortune.tip;
- document.getElementById('lucky-color').textContent=colors[((info.key*17+3)%colors.length+colors.length)%colors.length];
- document.getElementById('lucky-number').textContent=((info.key*7)%99+99)%99+1;
- document.getElementById('result').hidden=false;
- this.setAttribute('aria-expanded','true');
- this.textContent='오늘의 운세 다시 보기 ✨';
-});
-</script>
+
+    <header>
+        <h1>오늘의 귀여움 🐾</h1>
+        <p>당신의 하루를 행복하게 채워줄 친구들을 만나보세요.</p>
+    </header>
+
+    <main class="main-container">
+        <div class="image-wrapper">
+            <div id="loading" class="loading-overlay">
+                <div class="spinner"></div>
+                <p>귀여움 충전 중...</p>
+            </div>
+            <img id="pet-image" alt="귀여운 동물 사진">
+        </div>
+
+        <div class="controls">
+            <button class="btn-dog" onclick="loadPet('dog')"><span>🐶</span> 강아지</button>
+            <button class="btn-cat" onclick="loadPet('cat')"><span>🐱</span> 고양이</button>
+            <button class="btn-random" onclick="loadPet('random')"><span>✨</span> 아무나 좋아!</button>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 오늘의 귀여움. 즐거운 하루 되세요!</p>
+    </footer>
+
+    <script>
+        const dogApi = 'https://dog.ceo/api/breeds/image/random';
+        const catApi = 'https://api.thecatapi.com/v1/images/search';
+        
+        const imgElement = document.getElementById('pet-image');
+        const loadingOverlay = document.getElementById('loading');
+
+        async function loadPet(type) {
+            // UI 초기화
+            loadingOverlay.classList.remove('hidden');
+            imgElement.classList.remove('loaded');
+
+            let targetType = type;
+            if (type === 'random') {
+                targetType = Math.random() > 0.5 ? 'dog' : 'cat';
+            }
+
+            try {
+                let imageUrl = '';
+                if (targetType === 'dog') {
+                    const res = await fetch(dogApi);
+                    const data = await res.json();
+                    imageUrl = data.message;
+                } else {
+                    const res = await fetch(catApi);
+                    const data = await res.json();
+                    imageUrl = data[0].url;
+                }
+
+                // 이미지 미리 로드하여 자연스럽게 표시
+                const tempImg = new Image();
+                tempImg.src = imageUrl;
+                tempImg.onload = () => {
+                    imgElement.src = imageUrl;
+                    imgElement.classList.add('loaded');
+                    loadingOverlay.classList.add('hidden');
+                };
+                tempImg.onerror = () => {
+                    alert('사진을 불러오는데 실패했어요. 다시 시도해 주세요!');
+                    loadingOverlay.classList.add('hidden');
+                };
+
+            } catch (error) {
+                console.error('Fetch error:', error);
+                alert('네트워크 연결을 확인해 주세요.');
+                loadingOverlay.classList.add('hidden');
+            }
+        }
+
+        // 페이지 진입 시 첫 사진 로드
+        window.addEventListener('DOMContentLoaded', () => {
+            loadPet('random');
+        });
+    </script>
 </body>
 </html>
+
